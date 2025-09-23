@@ -1,0 +1,12 @@
+<h1>Most Anticipated Events</h1>
+
+<ul>
+    <% @events.each do |event| %>
+    
+    <li>
+        <%= event.title%>
+        <%= event.descriptions%>
+    </li>
+    
+    <% end %>
+</ul>
