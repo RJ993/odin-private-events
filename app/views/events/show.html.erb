@@ -3,3 +3,22 @@
 <h2>Hosted By <%= @event.creator.username %></h2>
 
 <p>Description: <%= @event.description %></p>
+
+<div>
+    <h3>List of Attendees:</h3>
+    
+    <ul>
+        <% User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", @event).each do |attendee| %>
+             <li>
+                <%= attendee.username %> <br />
+            </li>
+        <% end %>
+    </ul>
+</div>
+
+
+<%if user_signed_in? %>
+    <% if current_user.id != @event.creator.id %>
+        <%= render "event_registrations/form", event: @event %>
+    <% end %>
+<% end %>

@@ -1,0 +1,6 @@
+<%= form_with model: [ @event, @event.event_registrations.build ] do |form| %>
+    <h2>Attend?</h2>
+        <div>
+           <%= form.submit %>
+        </div>
+<% end %>
