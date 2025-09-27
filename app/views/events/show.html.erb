@@ -1,16 +1,20 @@
+<%= render "layouts/header" %>
+
 <h1>Title: <%= @event.title %></h1>
 
-<h2>Hosted By <%= @event.creator.username %></h2>
+<h2>Hosted By <%= link_to @event.creator.username, @event.creator %></h2>
 
 <p>Description: <%= @event.description %></p>
+
+<% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", @event) %>
 
 <div>
     <h3>List of Attendees:</h3>
     
     <ul>
-        <% User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", @event).each do |attendee| %>
+        <% attendees.each do |attendee| %>
              <li>
-                <%= attendee.username %> <br />
+                <%= link_to attendee.username, attendee %> <br />
             </li>
         <% end %>
     </ul>
@@ -18,7 +22,21 @@
 
 
 <%if user_signed_in? %>
-    <% if current_user.id != @event.creator.id %>
-        <%= render "event_registrations/form", event: @event %>
+    <% if current_user.id == @event.creator.id %>
+        <ul>
+            <li><%= link_to "Edit", edit_event_path(@event) %></li>
+            <li><%= link_to "Destroy", event_path(@event), data: {
+                                turbo_method: :delete,
+                                turbo_confirm: "Are you sure?"
+                            } %></li>
+        </ul>
+    <% else %>
+        <% if attendees.include?(current_user) == false %>
+            <%= render "event_registrations/form", event: @event %>
+        <% else %>
+            <% event_reg = EventRegistration.where("attendee_id = ? AND relevant_event_id = ?", current_user, @event) %>
+            <h3>Leave?</h3>
+            <%= button_to "Cancel Attendance", event_event_registration_path(@event, event_reg), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
+        <% end %>
     <% end %>
 <% end %>

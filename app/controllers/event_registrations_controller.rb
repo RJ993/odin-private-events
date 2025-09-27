@@ -12,11 +12,26 @@ class EventRegistrationsController < ApplicationController
       flash.now[:alert] = "Something is not right."
       redirect_to @event
     end
+
+    # private
+
+    # def reg_params
+    # params.expect(event_registration: [ attendee_id: current_user, relevant_event_id: @event ])
+    # end
   end
 
-  private
 
-  # def reg_params
-  # params.expect(event_registration: [ attendee_id: current_user, relevant_event_id: @event ])
-  # end
+  def destroy
+    @event = Event.find(params[:event_id])
+    @event_registration = @event.event_registrations.find_by(relevant_event_id: params[:event_id], attendee: current_user)
+
+    if @event_registration
+      @event_registration.destroy
+      redirect_to @event
+      flash[:notice] = "You are no longer in attendance."
+    else
+      flash.now[:alert] = "Something is not right."
+      redirect_to @event
+    end
+  end
 end

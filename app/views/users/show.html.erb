@@ -1,3 +1,5 @@
+<%= render "layouts/header" %>
+
 <h1><%= @user.username %></h1>
 
 <div>
@@ -5,7 +7,7 @@
     <ul>
         <% @user.organized_events.each do |event| %>
             <li>
-                <%= event.title %> <br />
+                <%= link_to event.title, event %> <br />
             </li>
         <% end %>
     </ul>
@@ -16,7 +18,7 @@
     <ul>
         <% Event.joins(event_registrations: :attendee).where("date >= ? AND attendee_id = ?", Time.now, @user).each do |event| %>
              <li>
-                <%= event.title %> <br />
+                <%= link_to event.title, event %> <br />
             </li>
         <% end %>
     </ul>
@@ -27,7 +29,7 @@
     <ul>
         <% Event.joins(event_registrations: :attendee).where("date < ? AND attendee_id = ?", Time.now, @user).each do |event| %>
              <li>
-                <%= event.title %> <br />
+                <%= link_to event.title, event %> <br />
             </li>
         <% end %>
     </ul>
