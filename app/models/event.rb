@@ -3,6 +3,7 @@ class Event < ApplicationRecord
 
   scope :past, -> { where("date < ?", Time.now) }
   scope :upcoming, -> { where("date >= ?", Time.now) }
+  enum :availability, { open_to_public: 0, only_private: 1 }
 
   has_many :attendees, through: :event_registrations, source: :attendee
   has_many :event_registrations, foreign_key: "relevant_event_id", dependent: :destroy

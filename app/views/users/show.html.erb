@@ -3,34 +3,63 @@
 <h1><%= @user.username %></h1>
 
 <div>
-    <h2>Events Organized</h2>
-    <ul>
-        <% @user.organized_events.each do |event| %>
-            <li>
-                <%= link_to event.title, event %> <br />
-            </li>
-        <% end %>
-    </ul>
-</div>
-
-<div>
-    <h2>Events Attending</h2>
-    <ul>
-        <% Event.joins(event_registrations: :attendee).where("date >= ? AND attendee_id = ?", Time.now, @user).each do |event| %>
-             <li>
-                <%= link_to event.title, event %> <br />
-            </li>
-        <% end %>
-    </ul>
-</div>
-
-<div>
-    <h2>Events Attended</h2>
-    <ul>
-        <% Event.joins(event_registrations: :attendee).where("date < ? AND attendee_id = ?", Time.now, @user).each do |event| %>
-             <li>
-                <%= link_to event.title, event %> <br />
-            </li>
-        <% end %>
-    </ul>
+    <div>
+        <h2>Events Organized</h2>
+        <ul>
+            <% @user.organized_events.each do |event| %>
+            <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", event) %>
+                <% if event.open_to_public? %>
+                    <li>
+                        <%= link_to event.title, event %>
+                    </li>
+                    <% else %>
+                        <% if user_signed_in? && (current_user == event.creator || attendees.include?(current_user)) %>
+                            <li>
+                                <%= link_to event.title, event %>
+                            </li>
+                        <% end %>
+                <% end %>
+            <% end %>
+        </ul>
+    </div>
+    
+    <div>
+        <h2>Events Attending</h2>
+        <ul>
+            <% Event.joins(event_registrations: :attendee).where("date >= ? AND attendee_id = ?", Time.now, @user).each do |event| %>
+            <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", event) %>
+                <% if event.open_to_public? %>
+                    <li>
+                        <%= link_to event.title, event %>
+                    </li>
+                <% else %>
+                        <% if user_signed_in? && (current_user == event.creator || attendees.include?(current_user)) %>
+                            <li>
+                                <%= link_to event.title, event %>
+                            </li>
+                        <% end %>
+                <% end %>
+            <% end %>
+        </ul>
+    </div>
+    
+    <div>
+        <h2>Events Attended</h2>
+        <ul>
+            <% Event.joins(event_registrations: :attendee).where("date < ? AND attendee_id = ?", Time.now, @user).each do |event| %>
+            <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", event) %>
+                <% if event.open_to_public? %>
+                    <li>
+                        <%= link_to event.title, event %>
+                    </li>
+                <% else %>
+                        <% if user_signed_in? && (current_user == event.creator || attendees.include?(current_user)) %>
+                            <li>
+                                <%= link_to event.title, event %>
+                            </li>
+                        <% end %>
+                <% end %>
+            <% end %>
+        </ul>
+    </div>
 </div>

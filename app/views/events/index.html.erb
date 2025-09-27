@@ -2,12 +2,19 @@
 
 <h1>Most Anticipated Events</h1>
 
+<% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", event) %>
+
 <ul>
     <% @events.upcoming.each do |event| %>
-    
+    <% if event.open_to_public? %>
     <li>
         <%= link_to event.title, event %>
     </li>
+    <% else %>
+        <% if user_signed_in? && (current_user == event.creator || attendees.include?(current_user))  %>
+            <%= link_to event.title, event %>
+        <% end %>
+    <% end %>
     
     <% end %>
 </ul>
@@ -17,9 +24,17 @@
 <ul>
     <% @events.past.each do |event| %>
     
+    <% if event.open_to_public? %>
     <li>
         <%= link_to event.title, event %>
     </li>
+    <% else %>
+        <% if user_signed_in? && (current_user == event.creator || attendees.include?(current_user))  %>
+            <%= link_to event.title, event %>
+        <% end %>
+    <% end %>
+    
+    <% end %>
     
     <% end %>
 </ul>
