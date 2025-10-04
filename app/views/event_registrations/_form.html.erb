@@ -1,5 +1,8 @@
 <%= form_with model: [ @event, @event.event_registrations.build ] do |form| %>
     <h2>Attend?</h2>
+        <%= form.hidden_field :status, :value => :accepted %>
+        <%= form.hidden_field :attendee_id, :value => current_user.id %>
+
         <div>
            <%= form.submit %>
         </div>

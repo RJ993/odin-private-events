@@ -25,10 +25,10 @@
 
   <div>
     <%= form.label :availability, value: "Who can see this event?" %><br>
-    <%= form.radio_button :open_to_public, value: "public" %>
-    <%= form.label :open_to_public, value: "Public" %> <br>
-    <%= form.radio_button :only_private, value: "private" %>
-    <%= form.label :only_private, value: "Private" %> <br>
+    <%= form.radio_button :availability, :open_to_public %>
+    <%= form.label :availability, "Public" %> <br>
+    <%= form.radio_button :availability, :only_private %>
+    <%= form.label :availability, "Private" %> <br>
     <% @event.errors.full_messages_for(:availability).each do |message| %>
       <div><%= message %></div>
     <% end %>
