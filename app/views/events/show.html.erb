@@ -6,13 +6,11 @@
 
 <p>Description: <%= @event.description %></p>
 
-<% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ? AND status = ?", @event, :accepted) %>
-
 <div>
     <h3>List of Attendees:</h3>
     
     <ul>
-        <% attendees.each do |attendee| %>
+        <% @accepted_attendees.each do |attendee| %>
              <li>
                 <%= link_to attendee.username, attendee %> <br />
             </li>
@@ -20,9 +18,22 @@
     </ul>
 </div>
 
+<!-- _________________________________________________________________________________________________________ -->
 
-<%if user_signed_in? %>
+<% if user_signed_in? %>
     <% if current_user.id == @event.creator.id %>
+        <h3>List of People You Invited:</h3>
+    
+        <ul>
+            <% @pending_attendees.each do |attendee| %>
+                <li>
+                    <%= link_to attendee.username, attendee %> <br />
+                </li>
+            <% end %>
+        </ul>
+
+        <%= render "event_registrations/invitation", event: @event %>
+        
         <ul>
             <li><%= link_to "Edit", edit_event_path(@event) %></li>
             <li><%= link_to "Destroy", event_path(@event), data: {
@@ -31,7 +42,7 @@
                             } %></li>
         </ul>
     <% else %>
-        <% if attendees.include?(current_user) == false %>
+        <% if @accepted_attendees.include?(current_user) == false %>
             <%= render "event_registrations/form", event: @event %>
         <% else %>
             <% event_reg = EventRegistration.where("attendee_id = ? AND relevant_event_id = ?", current_user, @event) %>

@@ -1,0 +1,21 @@
+<h3>Invite?</h3>
+
+<% involved = [@event.creator.id]%>
+<% @attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", @event) 
+
+@attendees.each do |attendee|
+    involved.push(attendee.id) 
+end %>
+
+<%= form_with model: [ @event, @event.event_registrations.build ] do |form| %>
+
+        <div>
+            <%= form.collection_radio_buttons :attendee_id, User.where.not(id: involved ).order(:username), :id, :username %> 
+        </div><br>
+    
+        <%= form.hidden_field :status, :value => :pending %>
+
+        <div>
+           <%= form.submit %>
+        </div>
+<% end %>

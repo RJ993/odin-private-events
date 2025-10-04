@@ -1,7 +1,20 @@
-<%= form_with model: [ @event, @event.event_registrations.build ] do |form| %>
-    <h2>Attend?</h2>
+<% if @pending_attendees.include?(current_user)%>
+       <%  model = [ @event, EventRegistration.find_by(attendee: current_user, relevant_event: @event) ] %>
+       <%  method = :patch %>
+<% else %>
+        <%  model = [ @event, @event.event_registrations.build ] %>
+        <%  method = :post %>
+<% end %>
+
+<%= form_with model: model, method: method do |form| %>
+    <% if @pending_attendees.include?(current_user)%>
+        <h2>Accept Invitation?</h2>
+        <%= form.hidden_field :status, :value => :accepted %>
+    <% else %>
+        <h2>Attend?</h2>
         <%= form.hidden_field :status, :value => :accepted %>
         <%= form.hidden_field :attendee_id, :value => current_user.id %>
+    <% end %>
 
         <div>
            <%= form.submit %>

@@ -4,7 +4,7 @@
 
 <ul>
     <% @events.upcoming.each do |event| %>
-    <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", event) %>
+    <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ? AND status = ?", event, 1) %>
     <% if event.open_to_public? %>
     <li>
         <%= link_to event.title, event %>
@@ -22,7 +22,7 @@
 
 <ul>
     <% @events.past.each do |event| %>
-    <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", event) %>
+    <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ? AND status = ?", event, 1) %>
     
     <% if event.open_to_public? %>
     <li>

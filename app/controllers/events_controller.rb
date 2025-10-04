@@ -10,6 +10,8 @@ class EventsController < ApplicationController
 
   def show
     @event = Event.find(params[:id])
+    @accepted_attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ? AND status = ?", @event, 1)
+    @pending_attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ? AND status = ?", @event, 0)
   end
 
   def create

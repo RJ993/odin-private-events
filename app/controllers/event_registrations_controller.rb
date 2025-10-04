@@ -13,6 +13,19 @@ class EventRegistrationsController < ApplicationController
     end
   end
 
+  def update
+    @event = Event.find(params[:event_id])
+    @event_registration = EventRegistration.find_by(attendee: current_user, relevant_event: @event)
+
+    if @event_registration.update(reg_params)
+      redirect_to @event
+      flash[:notice] = "You have registered."
+    else
+      flash.now[:alert] = "Something is not right."
+      redirect_to @event
+    end
+  end
+
 
   def destroy
     @event = Event.find(params[:event_id])

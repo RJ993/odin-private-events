@@ -27,7 +27,7 @@
         <h2>Events Attending</h2>
         <ul>
             <% Event.joins(event_registrations: :attendee).where("date >= ? AND attendee_id = ?", Time.now, @user).each do |event| %>
-            <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", event) %>
+            <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ? AND status = ?", event, 1) %>
                 <% if event.open_to_public? %>
                     <li>
                         <%= link_to event.title, event %>
@@ -47,7 +47,7 @@
         <h2>Events Attended</h2>
         <ul>
             <% Event.joins(event_registrations: :attendee).where("date < ? AND attendee_id = ?", Time.now, @user).each do |event| %>
-            <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ?", event) %>
+            <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ? AND status = ?", event, 1) %>
                 <% if event.open_to_public? %>
                     <li>
                         <%= link_to event.title, event %>
@@ -62,4 +62,22 @@
             <% end %>
         </ul>
     </div>
+
+    
 </div>
+
+<% if user_signed_in? && @user = current_user %>
+    <div>
+        <h2>You have been invited to...</h2>
+        <ul>
+            <% Event.joins(event_registrations: :attendee).where("date >= ? AND attendee_id = ?", Time.now, @user).each do |event| %>
+            <% attendees = User.joins(event_registrations: :relevant_event).where("relevant_event_id = ? AND status = ?", event, 0) %>
+                <% if attendees.include?(current_user) %>
+                    <li>
+                        <%= link_to event.title, event %>
+                    </li>
+                <% end %>
+            <% end %>
+        </ul>
+    </div>
+<% end %>
